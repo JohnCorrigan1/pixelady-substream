@@ -19,4 +19,18 @@ pub struct Transfer {
     #[prost(uint64, tag="5")]
     pub ordinal: u64,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Mints {
+    #[prost(message, repeated, tag="1")]
+    pub mints: ::prost::alloc::vec::Vec<Mint>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Mint {
+    #[prost(string, tag="1")]
+    pub to: ::prost::alloc::string::String,
+    #[prost(uint64, tag="2")]
+    pub token_id: u64,
+}
 // @@protoc_insertion_point(module)

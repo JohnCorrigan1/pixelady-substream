@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: "substreams_template"
+  name: "pixelady_substream"
   version: v0.1.0
 
 imports:
@@ -26,21 +26,29 @@ modules:
     output:
       type: proto:eth.erc721.v1.Transfers
 
-  - name: store_transfers
-    kind: store
-    initialBlock: 12287507
-    updatePolicy: add
-    valueType: int64
-    inputs:
-      - map: map_transfers
-
-  - name: db_out
+  - name: map_mints
     kind: map
-    initialBlock: 12287507
+    initialBlock: 0
     inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_transfers
-      - store: store_transfers
-        mode: deltas
+      - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+      type: proto:eth.erc721.v1.Mints
+
+  # - name: store_transfers
+  #   kind: store
+  #   initialBlock: 12287507
+  #   updatePolicy: add
+  #   valueType: int64
+  #   inputs:
+  #     - map: map_transfers
+
+  # - name: db_out
+  #   kind: map
+  #   initialBlock: 12287507
+  #   inputs:
+  #     - source: sf.substreams.v1.Clock
+  #     - map: map_transfers
+  #     - store: store_transfers
+  #       mode: deltas
+  #   output:
+  #     type: proto:sf.substreams.sink.database.v1.DatabaseChanges

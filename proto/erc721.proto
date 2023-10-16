@@ -13,3 +13,12 @@ message Transfer {
   string trx_hash = 4;
   uint64 ordinal = 5;
 }
+
+message Mints {
+    repeated Mint mints = 1;
+}
+
+message Mint {
+    string to = 1;
+    uint64 token_id = 2;
+}

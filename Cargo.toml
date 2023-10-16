@@ -1,5 +1,5 @@
 [package]
-name = "substreams-template"
+name = "pixelady_substream"
 version = "0.1.0"
 description = "Substream template demo project"
 edition = "2021"
