@@ -32,5 +32,7 @@ pub struct Mint {
     pub to: ::prost::alloc::string::String,
     #[prost(uint64, tag="2")]
     pub token_id: u64,
+    #[prost(string, tag="3")]
+    pub trx_hash: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

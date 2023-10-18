@@ -57,6 +57,7 @@ fn map_mints(blk: eth::Block) -> Result<Option<erc721::Mints>, substreams::error
                 Some(erc721::Mint {
                     to: Hex::encode(&mint.to),
                     token_id: mint.token_id.to_u64(),
+                    trx_hash: Hex::encode(&blk.hash),
                 })
             } else {
                 None
@@ -70,45 +71,35 @@ fn map_mints(blk: eth::Block) -> Result<Option<erc721::Mints>, substreams::error
     Ok(Some(erc721::Mints { mints }))
 }
 
-const NULL_ADDRESS_STR: &str = "0000000000000000000000000000000000000000";
 /// Store the total balance of NFT tokens for the specific TRACKED_CONTRACT by holder
+///
+/*
 #[substreams::handlers::store]
-fn store_transfers(transfers: erc721::Transfers, s: StoreAddInt64) {
+fn store_mints(transfers: erc721::Mints, s: StoreAddInt64) {
     log::info!("NFT holders state builder");
-    for transfer in transfers.transfers {
-        if transfer.from != NULL_ADDRESS_STR {
-            log::info!("Found a transfer out {}", Hex(&transfer.trx_hash));
-            s.add(transfer.ordinal, generate_key(&transfer.from), -1);
-        }
-
-        if transfer.to != NULL_ADDRESS_STR {
-            log::info!("Found a transfer in {}", Hex(&transfer.trx_hash));
-            s.add(transfer.ordinal, generate_key(&transfer.to), 1);
-        }
+    for transfer in transfers.mints {
+        log::info!("Found a transfer out {}", Hex(&transfer.trx_hash));
+        s.add(transfer.token_id, generate_key(&transfer.to), -1);
     }
-}
+} */
 
 #[substreams::handlers::map]
 fn db_out(
-    clock: substreams::pb::substreams::Clock,
-    transfers: erc721::Transfers,
-    owner_deltas: Deltas<DeltaInt64>,
+    _clock: substreams::pb::substreams::Clock,
+    transfers: erc721::Mints,
+    //    _owner_deltas: Deltas<DeltaInt64>,
 ) -> Result<DatabaseChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
-    for transfer in transfers.transfers {
+    for transfer in transfers.mints {
+        log::info!("Juicer number: {}", transfer.token_id);
         tables
-            .create_row(
-                "transfer",
-                format!("{}-{}", &transfer.trx_hash, transfer.ordinal),
-            )
+            .create_row("mints", format!("{}", &transfer.token_id))
             .set("trx_hash", transfer.trx_hash)
-            .set("from", transfer.from)
-            .set("to", transfer.to)
-            .set("token_id", transfer.token_id)
-            .set("ordinal", transfer.ordinal);
+            .set("to_address", transfer.to)
+            .set("token_id", transfer.token_id);
     }
 
-    for delta in owner_deltas.into_iter() {
+    /*for delta in owner_deltas.into_iter() {
         let holder = key::segment_at(&delta.key, 1);
         let contract = key::segment_at(&delta.key, 2);
 
@@ -118,11 +109,11 @@ fn db_out(
             .set("holder", holder)
             .set("balance", delta.new_value)
             .set("block_number", clock.number);
-    }
+    }*/
 
     Ok(tables.to_database_changes())
 }
 
-fn generate_key(holder: &String) -> String {
-    return format!("total:{}:{}", holder, Hex(TRACKED_CONTRACT));
-}
+//fn generate_key(holder: &String) -> String {
+//   return format!("total:{}:{}", holder, Hex(TRACKED_CONTRACT));
+//}
